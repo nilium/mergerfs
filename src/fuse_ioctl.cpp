@@ -35,6 +35,14 @@
 using std::string;
 using std::vector;
 
+#ifndef FS_IOC_GETFLAGS
+# define FS_IOC_GETFLAGS _IOR('f',1,long)
+#endif
+
+#ifndef FS_IOC_SETFLAGS
+# define FS_IOC_SETFLAGS _IOW('f',2,long)
+#endif
+
 namespace l
 {
   static
@@ -45,7 +53,31 @@ namespace l
   {
     int rv;
 
-    rv = fs::ioctl(fd_,cmd_,data_);
+    switch(cmd_)
+      {
+      case FS_IOC_GETFLAGS:
+      case FS_IOC_SETFLAGS:
+        {
+          int attr;
+
+          attr = *(long*)data_;
+          rv = fs::ioctl(fd_,cmd_,(void*)&attr);
+          if(rv != -1)
+            *(long*)data_ = attr;
+        }
+        break;
+      default:
+        switch(_IOC_DIR(cmd_))
+          {
+          case _IOC_NONE:
+            rv = fs::ioctl(fd_,cmd_);
+            break;
+          default:
+            rv = fs::ioctl(fd_,cmd_,data_);
+            break;
+          }
+        break;
+      }
 
     return ((rv == -1) ? -errno : rv);
   }

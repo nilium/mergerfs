@@ -28,11 +28,11 @@
 #include <unistd.h>
 
 static
-loff_t
+ssize_t
 copy_file_range_(int           fd_in_,
-                 loff_t       *off_in_,
+                 int64_t      *off_in_,
                  int           fd_out_,
-                 loff_t       *off_out_,
+                 int64_t      *off_out_,
                  size_t        len_,
                  unsigned int  flags_)
 {
@@ -53,9 +53,9 @@ namespace fs
 {
   ssize_t
   copy_file_range(const int           fd_in_,
-                  loff_t             *off_in_,
+                  int64_t            *off_in_,
                   const int           fd_out_,
-                  loff_t             *off_out_,
+                  int64_t            *off_out_,
                   const size_t        len_,
                   const unsigned int  flags_)
   {
@@ -73,8 +73,8 @@ namespace fs
                   const size_t        len_,
                   const unsigned int  flags_)
   {
-    loff_t off_in;
-    loff_t off_out;
+    int64_t off_in;
+    int64_t off_out;
 
     off_in  = 0;
     off_out = 0;
